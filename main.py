@@ -9,7 +9,7 @@ RELAY_SECRET = os.environ["RELAY_SECRET"]
 app = FastAPI()
 client = httpx.AsyncClient(base_url=UPSTREAM, timeout=180)
 
-HOP_HEADERS = {"host", "content-length", "connection", "x-relay-secret"}
+HOP_HEADERS = {"host", "content-length", "connection", "x-relay-secret", "accept-encoding"}
 
 
 @app.get("/health")
