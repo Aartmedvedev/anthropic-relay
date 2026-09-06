@@ -29,6 +29,7 @@ async def relay(path: str, request: Request):
     if request.headers.get("x-relay-secret") != RELAY_SECRET:
         return Response(status_code=401, content="unauthorized")
     headers = {k: v for k, v in request.headers.items() if k.lower() not in HOP_HEADERS}
+    headers["accept-encoding"] = "identity"  # без gzip: отдаем байты как есть
     req = client.build_request(
         request.method,
         f"/v1/{path}",
@@ -46,7 +47,7 @@ async def relay(path: str, request: Request):
 
     async def body():
         try:
-            async for chunk in upstream_resp.aiter_raw():
+            async for chunk in upstream_resp.aiter_bytes():
                 yield chunk
         finally:
             await upstream_resp.aclose()
